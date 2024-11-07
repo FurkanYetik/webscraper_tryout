@@ -3,14 +3,12 @@ from bs4 import BeautifulSoup
 import json
 import time
 
-# Set headers to mimic a browser request
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
     "Accept-Language": "en-US,en;q=0.9",
     "Connection": "keep-alive"
 }
 
-# Maximum number of retries for each request
 max_retries = 3
 
 def scrape_item_attributes(url):
@@ -22,7 +20,6 @@ def scrape_item_attributes(url):
             soup = BeautifulSoup(response.content, 'html.parser')
 
             attributes = {}
-            # Locate the div containing product attributes
             attribute_section = soup.select_one('div.col-md-6.option-info.nopadding')
 
             if attribute_section:
@@ -41,13 +38,11 @@ def scrape_item_attributes(url):
     print(f"Failed to fetch {url} after {max_retries} attempts.")
     return {}
 
-# Load URLs from the JSON file
 with open('lcw_products_urls.json', 'r') as file:
     urls = json.load(file)
 
 scraped_data = []
 
-# Start the timer
 start_time = time.time()
 
 for i, url in enumerate(urls, start=1):
@@ -57,7 +52,6 @@ for i, url in enumerate(urls, start=1):
         "attributes": attributes
     })
 
-    # Calculate and print estimated time remaining
     elapsed_time = time.time() - start_time
     avg_time_per_url = elapsed_time / i
     remaining_urls = len(urls) - i
@@ -65,13 +59,10 @@ for i, url in enumerate(urls, start=1):
 
     print(f"Scraped {i}/{len(urls)}. Estimated time remaining: {estimated_remaining_time:.2f} seconds.")
 
-    # Add delay between requests to avoid overloading the server
     time.sleep(1)
 
-# Total time taken
 total_time = time.time() - start_time
 
-# Save scraped data to a JSON file
 with open('scraped_product_data.json', 'w', encoding='utf-8') as json_file:
     json.dump(scraped_data, json_file, ensure_ascii=False, indent=4)
 
